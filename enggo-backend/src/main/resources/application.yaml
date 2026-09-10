@@ -1,11 +1,18 @@
 spring:
   application:
     name: enggo-backend
+
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-1
+
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://13.158.23.199:3306/tienganh_app}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://enggo-db.cbiigm4we5ha.ap-northeast-1.rds.amazonaws.com:3306/tienganh_app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    username: admin
+    password: ${DB_PASSWORD:Ductu123aws}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,17 +22,15 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
-  # 🎯 BỔ SUNG1: Cấu hình kết nối Redis cho tính năng Matchmaking
   data:
     redis:
       host: ${SPRING_REDIS_HOST:13.158.23.199}
       port: ${SPRING_REDIS_PORT:6379}
-      # password: ${SPRING_REDIS_PASSWORD:} # Mở ra nếu Redis của bạn đặt mật khẩu
 
   servlet:
     multipart:
-      max-file-size: 5MB        # Giới hạn cho 1 file duy nhất
-      max-request-size: 5MB     # Giới hạn tổng dung lượng request
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 server:
   port: 8080
@@ -33,21 +38,26 @@ server:
     context-path: /api
 
 jwt:
-  signer-key: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
-  valid-duration: 3600 # 1 giờ
-  refreshable-duration: 36000 # 10 giờ
+  signer-key: ${JWT_SIGNER_KEY:1234567890123456789012345678901234567890123456789012345678901234} # Lấy từ Parameter Store (/config/enggo-backend/JWT_SIGNER_KEY)
+  valid-duration: 3600
+  refreshable-duration: 36000
 
-cloudinary:
-  cloud-name: dsqdpp6f2
-  api-key: 417138881551446
-  api-secret: 5Dm3K3UYb42uK-HghID9Hn452mw
+aws:
+  s3:
+    region: ${AWS_REGION:ap-northeast-1}
+    bucket-name: ${AWS_S3_BUCKET:enggo-media-bucket}
+    access-key: ${AWS_S3_ACCESS_KEY} # Lấy từ Parameter Store (/config/enggo-backend/AWS_S3_ACCESS_KEY)
+    secret-key: ${AWS_S3_SECRET_KEY} # Lấy từ Parameter Store (/config/enggo-backend/AWS_S3_SECRET_KEY)
+  cloudfront:
+    domain: ${AWS_CLOUDFRONT_DOMAIN:d23shp4cw0s32c.cloudfront.net}
 
 app:
   upload:
-    max-size: 5242880 # 5MB
+    max-size: 5242880
     allowed-types:
       - image/jpeg
       - image/png
+
 game:
   levels:
     - { level: 1,  reqExp: 0 }

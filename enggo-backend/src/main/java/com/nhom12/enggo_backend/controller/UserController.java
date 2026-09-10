@@ -114,7 +114,7 @@ public class UserController {
 
     @PostMapping("/uploadAvatar")
     public ApiResponse<String> uploadAvatar(@RequestParam("file") MultipartFile file) throws IOException {
-
+        System.out.println("đã xuống đến đây");
         // 1. Upload ảnh lên Cloud
         String imageUrl = uploadsService.uploadImage(file);
 
