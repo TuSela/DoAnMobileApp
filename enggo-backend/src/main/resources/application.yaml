@@ -5,13 +5,13 @@ spring:
   cloud:
     aws:
       region:
-        static: ap-northeast-1
+        static: ${AWS_REGION:ap-northeast-1}
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://enggo-db.cbiigm4we5ha.ap-northeast-1.rds.amazonaws.com:3306/tienganh_app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: admin
-    password: ${DB_PASSWORD:Ductu123aws}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -20,12 +20,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
 
   data:
     redis:
-      host: ${SPRING_REDIS_HOST:13.158.23.199}
+      host: ${SPRING_REDIS_HOST:my-redis}
       port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:MatKhauBaoMat123!}
 
   servlet:
     multipart:
@@ -38,7 +38,7 @@ server:
     context-path: /api
 
 jwt:
-  signer-key: ${JWT_SIGNER_KEY:1234567890123456789012345678901234567890123456789012345678901234} # Lấy từ Parameter Store (/config/enggo-backend/JWT_SIGNER_KEY)
+  signer-key: ${JWT_SIGNER_KEY:1234567890123456789012345678901234567890123456789012345678901234}
   valid-duration: 3600
   refreshable-duration: 36000
 

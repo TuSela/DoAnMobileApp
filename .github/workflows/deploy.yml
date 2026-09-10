@@ -51,22 +51,31 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Kết nối SSH vào EC2 và thực thi script cập nhật app
+      - name: Kết nối SSH vào EC2 và triển khai
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1. Đăng nhập vào ECR ngay trên EC2 để có quyền pull image
+            # 1. Đăng nhập ECR
             aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 291159641494.dkr.ecr.ap-northeast-1.amazonaws.com
 
-            # 2. Chuyển đến thư mục chứa file docker-compose.yml
+            # 2. Vào thư mục dự án
             cd /home/ubuntu/enggo-project
 
-            # 3. Pull image mới nhất về và khởi chạy lại container backend (không làm gián đoạn Redis)
+            # 3. Tạo/Ghi đè file .env từ GitHub Secrets
+            cat <<EOF > .env
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            JWT_SIGNER_KEY=${{ secrets.JWT_SIGNER_KEY }}
+            SPRING_REDIS_PASSWORD=${{ secrets.SPRING_REDIS_PASSWORD }}
+            EOF
+
+            # 4. Pull image mới & chạy lại container
             docker compose pull enggo-backend
             docker compose up -d enggo-backend
 
-            # 4. Dọn dẹp image cũ để tránh đầy ổ cứng EC2
+            # 5. Dọn dẹp
             docker image prune -f
