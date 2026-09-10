@@ -69,6 +69,8 @@ public class ConversationService {
                 .collect(Collectors.toList());
     }
 
+
+    
     @Transactional
     public MessageResponse sendMessage(Integer currentUserId, Integer conversationId, SendMessageRequest request) {
         User sender = getUser(currentUserId);
